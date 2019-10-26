@@ -1,7 +1,12 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 
 from .managers import CustomUserManager
+
+
+class Department(models.Model):
+    name = models.CharField(max_length=50)
 
 
 class CustomUser(AbstractUser):
@@ -18,5 +23,34 @@ class CustomUser(AbstractUser):
 
     objects = CustomUserManager()
 
+    @property
+    def short_id(self):
+        return self.email[:self.email.find("@")].upper()
+
     def __str__(self):
-        return self.email
+        return f"{self.short_id} {self.name}"
+
+
+class Faculty(CustomUser):
+    PHONE_REGEX = RegexValidator(
+        regex=r"^(((\+?91)|0)[\-\s]?)?[6-9]\d{9}$",
+        message="Phone number is not in the correct format.",
+    )
+    psrn = models.PositiveSmallIntegerField("PSRN Number", primary_key=True)
+    alt_email = models.EmailField("alternate email", unique=True, blank=True, null=True)
+    contact_num = models.CharField(max_length=15, validators=[PHONE_REGEX])
+    dept = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "faculty"
+        default_related_name = "faculties"
+
+
+class Student(CustomUser):
+    # TODO: Add ID Num Regex Validator
+    id_num = models.CharField("ID Number", max_length=15, primary_key=True)
+    dept = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "student"
+        default_related_name = "students"
