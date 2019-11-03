@@ -13,9 +13,6 @@ class CustomUserBackend(ModelBackend):
 
     user_models = (Faculty, ResearchScholar, Student)  # order is important
 
-    def authenticate(self, *args, **kwargs):
-        return self.downcast_user_type(super().authenticate(*args, **kwargs))
-
     def get_user(self, *args, **kwargs):
         return self.downcast_user_type(super().get_user(*args, **kwargs))
 
@@ -24,6 +21,8 @@ class CustomUserBackend(ModelBackend):
         Retrieve the user from the first table that has a row with same email.
         Subclasses should be checked before parents.
         """
+        if user is None:
+            return None
         for Model in self.user_models:
             try:
                 return Model.objects.get(email=user.email)
