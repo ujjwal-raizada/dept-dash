@@ -3,31 +3,29 @@ from io import TextIOWrapper
 
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
-from django.urls import path
+from django.http import Http404
 from django.shortcuts import render, redirect
+from django.urls import path
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm, BulkImportForm
 from .models import CustomUser, Faculty, Student, Department
 
 
-def create_user(user_type, record):
+CSV_HEADERS = {
+    Student: ('email', 'id_num', 'name'),
+    Faculty: ('email', 'name', 'psrn', 'alt_email', 'contact_num', 'dept')
+}
 
-    arg_keys = {
-        Student: ['email', 'id_num', 'name'],
-        Faculty: ['email', 'name', 'psrn', 'alt_email', 'contact_num', 'dept']
-    }
 
-    arg_values_map = {
-        Student: ['email', 'id number', 'name'],
-        Faculty: ['email', 'name', 'psrn', 'alternate email', 'contact number', 'department']
-    }
-
-    if (user_type == Faculty):
-        record['department'] = Department.objects.get(name=record['department'])
-
-    arg_values = [record[x] for x in arg_values_map[user_type]]
-    arg_dict = dict(zip(arg_keys[user_type], arg_values))
-    user_type.objects.create(**arg_dict)
+def create_users(user_type, records):
+    headers = CSV_HEADERS[user_type]
+    if set(records.fieldnames) != set(headers):
+        raise Exception(f"Invalid CSV headers/columns. Expected: {headers}")
+    for record in records:
+        if user_type == Faculty:
+            record['dept'] = Department.objects.get(name=record['dept'])
+        # TODO: Update object if it already exists instead of failing hard
+        user_type.objects.create(**record)
 
 
 class CustomUserAdmin(UserAdmin):
@@ -73,7 +71,10 @@ class BulkImportAdmin(admin.ModelAdmin):
     def import_csv(self, request):
         if request.method == "POST":
             try:
-                csv_file = TextIOWrapper(request.FILES['csv_file'].file, encoding=request.encoding)
+                csv_file = TextIOWrapper(
+                    request.FILES['csv_file'].file,
+                    encoding=request.encoding
+                )
                 dialect = csv.Sniffer().sniff(csv_file.read(1024))
                 csv_file.seek(0)
                 reader = csv.DictReader(csv_file, dialect=dialect)
@@ -81,16 +82,17 @@ class BulkImportAdmin(admin.ModelAdmin):
                 self.message_user(request, "Error: {}".format(err))
                 return redirect("..")
             try:
-                if ('/student/' in request.path):
-                    for row in reader:
-                        create_user(Student, row)
-                elif ('/faculty/' in request.path):
-                    for row in reader:
-                        create_user(Faculty, row)
-                messages.success(request, "Your csv file has been imported")
+                if '/student/' in request.path:
+                    user_type = Student
+                elif '/faculty/' in request.path:
+                    user_type = Faculty
+                else:
+                    raise Http404
+                create_users(user_type, reader)
             except Exception as err:
-                messages.error(request, 'Error on row number {}: {}'.format(reader.line_num, err))
-                return redirect("..")
+                messages.error(request, f'Error on row number {reader.line_num}: {err}')
+            else:
+                messages.success(request, "Your csv file has been imported")
             return redirect("..")
         form = BulkImportForm()
         payload = {"form": form}
