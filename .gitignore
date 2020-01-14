@@ -12,3 +12,7 @@ build
 npm-debug.log*
 
 .vscode/
+*.sublime-project
+*.sublime-workspace
+*.dot
+*.csv
