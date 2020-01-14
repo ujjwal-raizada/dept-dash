@@ -40,7 +40,7 @@ class Faculty(CustomUser):
         message="Phone number is not in the correct format.",
     )
     psrn = models.PositiveSmallIntegerField("PSRN Number", primary_key=True)
-    alt_email = models.EmailField("alternate email", unique=True, blank=True, null=True)
+    alt_email = models.EmailField("alternate email", blank=True, null=True)
     contact_num = models.CharField(max_length=15, validators=[PHONE_REGEX])
     address = models.TextField(blank=True, null=True)
     profile_img = models.ImageField("profile picture", blank=True, null=True)
