@@ -11,6 +11,3 @@ social-auth-core = "*"
 social-auth-app-django = "*"
 djangorestframework-simplejwt = "*"
 pillow = "*"
-
-[requires]
-python_version = "3.7"
