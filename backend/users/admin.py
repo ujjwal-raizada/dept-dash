@@ -101,6 +101,10 @@ class BulkImportAdmin(admin.ModelAdmin):
         )
 
 
+admin.site.site_header = "CSIS Dashboard - BITS Pilani Hyderabad Campus"
+admin.site.site_title = 'CSIS Dashboard'
+admin.site.index_title = 'CSIS Dashboard'
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Student, BulkImportAdmin)
 admin.site.register(Faculty, BulkImportAdmin)
