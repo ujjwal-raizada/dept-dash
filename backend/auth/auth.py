@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from social_core.exceptions import AuthForbidden
 from users.models import Faculty, Student
-from research.models import ResearchScholar
+from users.models import ResearchScholar
 
 user_models = (Faculty, ResearchScholar, Student)  # order is important
 

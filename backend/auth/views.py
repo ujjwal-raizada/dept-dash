@@ -8,7 +8,7 @@ from requests.exceptions import HTTPError
 from social_django.utils import psa
 from social_core.exceptions import AuthForbidden
 from users.serializers import FacultySerializer, StudentSerializer
-from research.serializers import ResearchScholarSerializer
+from users.serializers import ResearchScholarSerializer
 
 user_serializers = (FacultySerializer, ResearchScholarSerializer, StudentSerializer)
 

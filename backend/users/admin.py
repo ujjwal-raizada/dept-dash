@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.urls import path
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm, BulkImportForm
-from .models import CustomUser, Faculty, Student, Department
+from .models import CustomUser, Faculty, Student, Department, ResearchScholar
 
 
 CSV_HEADERS = {
@@ -109,3 +109,5 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Student, BulkImportAdmin)
 admin.site.register(Faculty, BulkImportAdmin)
 admin.site.register(Department)
+admin.site.register(ResearchScholar)
+
