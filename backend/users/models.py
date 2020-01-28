@@ -59,3 +59,40 @@ class Student(CustomUser):
     class Meta:
         verbose_name = "student"
         default_related_name = "students"
+
+
+class ResearchScholar(CustomUser):
+    FULL_TIMER = "FT"
+    PART_TIMER = "PT"
+    ASPIRANT = "AS"
+    TENURE_TYPE_CHOICES = [
+        (FULL_TIMER, "Full Time"),
+        (PART_TIMER, "Part Time"),
+        (ASPIRANT, "Aspirant"),
+    ]
+    NO_FELLOWSHIP = "NONE"
+    INSTITUTE_FELLOWSHIP = "INST"
+    INDUSTRY_FUNDED = "INDS"
+    PROJECT_FUNDED = "PROJ"
+    FELLOWSHIP_CHOICES = [
+        (NO_FELLOWSHIP, "No Fellowship"),
+        (INSTITUTE_FELLOWSHIP, "Institute Fellowship"),
+        (INDUSTRY_FUNDED, "Industry Funded"),
+        (PROJECT_FUNDED, "Project Funded"),
+    ]
+    id_num = models.CharField("ID Number", max_length=15, primary_key=True)
+    tenure_type = models.CharField(max_length=2, choices=TENURE_TYPE_CHOICES)
+    fellowship = models.CharField(max_length=4, choices=FELLOWSHIP_CHOICES)
+    fellowship_details = models.TextField(null=True, blank=True)
+    joining_date = models.DateField(null=True, blank=True)
+    proposal_approval_date = models.DateField(null=True, blank=True)
+    qualifier_passing_date = models.DateField(null=True, blank=True)
+    graduation_date = models.DateField(null=True, blank=True)
+    supervisor = models.ForeignKey(Faculty, on_delete=models.CASCADE, null=True)
+    co_supervisor = models.TextField(null=True, blank=True)
+    dept = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "research scholar"
+        default_related_name = "scholars"
+

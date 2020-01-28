@@ -1,18 +1,10 @@
 from rest_framework import viewsets
 from .serializers import (
-    ResearchScholarSerializer,
     ProjectSerializer,
     PublicationSerializer,
 )
-from .models import ResearchScholar, Project, Publication
+from .models import Project, Publication
 from users.permissions import IsFaculty, IsHoD, IsResearchScholar, IsStudent
-
-
-class ResearchScholarView(viewsets.ModelViewSet):
-    serializer_class = ResearchScholarSerializer
-
-    def get_queryset(self):
-        return ResearchScholar.objects.filter(dept=self.request.user.dept)
 
 
 class ProjectView(viewsets.ModelViewSet):

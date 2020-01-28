@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Department, Faculty, Student
+from .models import Department, Faculty, Student, ResearchScholar
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -20,3 +20,22 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = ("email", "name", "id_num")
         depth = 1
+
+
+class ResearchScholarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResearchScholar
+        fields = (
+            "email",
+            "name",
+            "id_num",
+            "tenure_type",
+            "fellowship",
+            "joining_date",
+            "proposal_approval_date",
+            "qualifier_passing_date",
+            "supervisor",
+            "dept",
+        )
+        depth = 1
+
