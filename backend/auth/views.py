@@ -7,8 +7,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from requests.exceptions import HTTPError
 from social_django.utils import psa
 from social_core.exceptions import AuthForbidden
-from users.serializers import FacultySerializer, StudentSerializer
-from users.serializers import ResearchScholarSerializer
+from users.serializers import FacultySerializer, StudentSerializer, ResearchScholarSerializer
 
 user_serializers = (FacultySerializer, ResearchScholarSerializer, StudentSerializer)
 

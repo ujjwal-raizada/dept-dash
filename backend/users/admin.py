@@ -17,6 +17,18 @@ CSV_HEADERS = {
 }
 
 
+EXCLUDE_FIELDS = (
+    'password',
+    'last_login',
+    'is_superuser',
+    'groups',
+    'user_permissions',
+    'is_staff',
+    'is_active',
+    'date_joined'
+)
+
+
 def create_users(user_type, records):
     headers = CSV_HEADERS[user_type]
     if set(records.fieldnames) != set(headers):
@@ -60,6 +72,7 @@ class CustomUserAdmin(UserAdmin):
 
 class BulkImportAdmin(admin.ModelAdmin):
     change_list_template = "admin/csv_change_list.html"
+    exclude = EXCLUDE_FIELDS
 
     def get_urls(self):
         urls = super().get_urls()
@@ -87,6 +100,7 @@ class BulkImportAdmin(admin.ModelAdmin):
                 elif '/faculty/' in request.path:
                     user_type = Faculty
                 else:
+                    # TODO: Add bulk import for ResearchScholar
                     raise Http404
                 create_users(user_type, reader)
             except Exception as err:
@@ -105,9 +119,7 @@ admin.site.site_header = "CSIS Dashboard - BITS Pilani Hyderabad Campus"
 admin.site.site_title = 'CSIS Dashboard'
 admin.site.index_title = 'CSIS Dashboard'
 
-admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Student, BulkImportAdmin)
 admin.site.register(Faculty, BulkImportAdmin)
 admin.site.register(Department)
-admin.site.register(ResearchScholar)
-
+admin.site.register(ResearchScholar, BulkImportAdmin)
