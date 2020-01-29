@@ -1,5 +1,10 @@
 from rest_framework import viewsets
-from .serializers import DepartmentSerializer, FacultySerializer, StudentSerializer, ResearchScholarSerializer
+from .serializers import (
+    DepartmentSerializer,
+    FacultySerializer,
+    StudentSerializer,
+    ResearchScholarSerializer,
+)
 from .models import Department, Faculty, Student, ResearchScholar
 
 

@@ -38,4 +38,3 @@ class ResearchScholarSerializer(serializers.ModelSerializer):
             "dept",
         )
         depth = 1
-

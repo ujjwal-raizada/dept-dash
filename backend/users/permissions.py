@@ -1,6 +1,5 @@
 from rest_framework import permissions
-from users.models import Faculty, Student
-from users.models import ResearchScholar
+from users.models import Faculty, Student, ResearchScholar
 
 
 class IsHoD(permissions.BasePermission):
