@@ -14,3 +14,5 @@ pillow = ">=7.0.0"
 drf-extensions = ">=0.6.0"
 
 [dev-packages]
+pyyaml = "*"
+uritemplate = "*"
