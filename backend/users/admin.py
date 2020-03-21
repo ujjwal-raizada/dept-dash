@@ -13,7 +13,22 @@ from .models import CustomUser, Faculty, Student, Department, ResearchScholar
 
 CSV_HEADERS = {
     Student: ('email', 'id_num', 'name'),
-    Faculty: ('email', 'name', 'psrn', 'alt_email', 'contact_num', 'dept')
+    Faculty: ('email', 'name', 'psrn', 'alt_email', 'contact_num', 'dept'),
+    ResearchScholar: (
+        'email',
+        'name',
+        'id_num',
+        'tenure_type',
+        'fellowship',
+        'fellowship_details',
+        'joining_date',
+        'proposal_approval_date',
+        'qualifier_passing_date',
+        'graduation_date',
+        'supervisor',
+        'co_supervisor',
+        'dept',
+    )
 }
 
 
@@ -34,10 +49,17 @@ def create_users(user_type, records):
     if set(records.fieldnames) != set(headers):
         raise Exception(f"Invalid CSV headers/columns. Expected: {headers}")
     for record in records:
-        if user_type == Faculty:
+        record = {key: (value or None) for key, value in record.items()}
+        if 'dept' in records.fieldnames:
             record['dept'] = Department.objects.get(name=record['dept'])
+        if 'supervisor' in records.fieldnames:
+            supervisor = Faculty.objects.filter(name=record['supervisor'])
+            record['supervisor'] = supervisor.first()
         # TODO: Update object if it already exists instead of failing hard
-        user_type.objects.create(**record)
+        try:
+            user_type.objects.create(**record)
+        except Exception as err:
+            raise Exception(f'On row number {records.line_num}: {err}')
 
 
 class CustomUserAdmin(UserAdmin):
@@ -92,19 +114,20 @@ class BulkImportAdmin(admin.ModelAdmin):
                 csv_file.seek(0)
                 reader = csv.DictReader(csv_file, dialect=dialect)
             except Exception as err:
-                self.message_user(request, "Error: {}".format(err))
+                messages.error(request, f'Error: {err}')
                 return redirect("..")
             try:
                 if '/student/' in request.path:
                     user_type = Student
                 elif '/faculty/' in request.path:
                     user_type = Faculty
+                elif '/researchscholar/' in request.path:
+                    user_type = ResearchScholar
                 else:
-                    # TODO: Add bulk import for ResearchScholar
                     raise Http404
                 create_users(user_type, reader)
             except Exception as err:
-                messages.error(request, f'Error on row number {reader.line_num}: {err}')
+                messages.error(request, f'Error: {err}')
             else:
                 messages.success(request, "Your csv file has been imported")
             return redirect("..")
